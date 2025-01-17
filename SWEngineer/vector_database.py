@@ -24,7 +24,7 @@ def create_vector_database(texts):
 def query_database(db, query):
     print("Querying the vector database...")
     try:
-        mmr_docs = db.max_marginal_relevance_search(query, k=5, fetch_k=20)
+        mmr_docs = db.max_marginal_relevance_search(query, k=10, fetch_k=30)
         print(f"Query returned {len(mmr_docs)} documents.")
         return mmr_docs
 
