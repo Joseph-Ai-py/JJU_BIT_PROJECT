@@ -14,8 +14,8 @@ def generate_response(query, mmr_docs):
 
     question = {"instruction": query, "mmr_docs": mmr_docs}
     prompt = ChatPromptTemplate.from_messages([
-        ("system", f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Analyze the following content and answer the question. Answer in Korean."),
-        ("human", "{instruction}\n{mmr_docs}"),
+        ("system", f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Analyze the following and answer the questions in detail. Use simple words and answer in a way that a middle school student can understand. Answer in Korean."),
+        ("human", "query : {instruction}\n\n docs : {mmr_docs}"),
     ])
 
     llm = ChatOpenAI(temperature=0, model_name="gpt-4o")

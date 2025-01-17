@@ -1,4 +1,5 @@
 import os
+import shutil
 import random
 from datetime import datetime
 from dotenv import load_dotenv
@@ -39,6 +40,7 @@ def main_streamlit():
         st.session_state.texts = None
 
     if uploaded_file:
+        print(st.session_state.global_db)
         temp_file_path = f"temp_{uploaded_file.name}"
         with open(temp_file_path, "wb") as f:
             f.write(uploaded_file.read())
