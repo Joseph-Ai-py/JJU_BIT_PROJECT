@@ -59,7 +59,7 @@ def main_streamlit():
         st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True)  # 위 공간 확보
         cols = st.columns([5, 1])  # 5:1 비율로 컬럼 생성
         with cols[0]:
-            query = st.text_input("Enter your query:", key="query_input", value=st.session_state.query)
+            query = st.text_input("Enter your query:", key="query_input")
             print(f"input query : {query}")
         with cols[1]:
             query_button = st.button("Send Query")
