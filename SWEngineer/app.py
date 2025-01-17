@@ -6,8 +6,8 @@ import streamlit as st
 from process_pdf import process_pdf
 from vector_database import create_vector_database, query_database
 from response_generator import generate_response, generate_suggested_questions, display_suggested_questions
-from langchain.chains import ChatPromptTemplate
-from langchain.chat_models import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
 
 def main_streamlit():
     load_dotenv()
@@ -38,6 +38,10 @@ def main_streamlit():
         st.session_state.global_db = None
         st.session_state.texts = None
 
+    # session_state["query"]를 처음에만 설정
+    if "query" not in st.session_state:
+        st.session_state.query = ""
+
     if uploaded_file:
         temp_file_path = f"temp_{uploaded_file.name}"
         with open(temp_file_path, "wb") as f:
@@ -53,34 +57,39 @@ def main_streamlit():
             except Exception as e:
                 print(f"An error occurred during file processing: {e}")
 
+    # Suggested questions 생성 및 표시
+    if st.session_state.global_db and st.session_state.texts:
+        if st.sidebar.button("Generate Suggested Questions"):
+            try:
+                suggested_questions = generate_suggested_questions(st.session_state.global_db, st.session_state.texts)
+                query = display_suggested_questions(suggested_questions)
+                print(f"select query : {query}")
+            except Exception as e:
+                st.error(f"An error occurred while generating suggested questions: {e}")
+
     # 중앙 아래에 입력 및 버튼 배치
     placeholder = st.empty()  # 중앙 하단 위치에 요소를 추가할 공간
     with placeholder.container():
-        st.markdown("<div style='height: 50vh;'></div>", unsafe_allow_html=True)  # 위 공간 확보
+        st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True)  # 위 공간 확보
         cols = st.columns([5, 1])  # 5:1 비율로 컬럼 생성
         with cols[0]:
-            query = st.text_input("Enter your query:", key="query")
+            query = st.text_input("Enter your query:", key="query_input", value=st.session_state.query)
+            print(f"input query : {query}")
         with cols[1]:
             query_button = st.button("Send Query")
 
     if query_button:
         if st.session_state.global_db is None:
             st.warning("Please upload a file to create the database first.")
+        if query is "":
+            st.warning("Query cannot be empty.")
         else:
             try:
+                print(f"query : {query}")
                 mmr_docs = query_database(st.session_state.global_db, query)
                 generate_response(query, mmr_docs)
             except Exception as e:
                 st.error(f"An error occurred during querying: {e}")
-
-    # Suggested questions 생성 및 표시
-    if st.session_state.global_db and st.session_state.texts:
-        if st.button("Generate Suggested Questions"):
-            try:
-                suggested_questions = generate_suggested_questions(st.session_state.global_db, st.session_state.texts)
-                display_suggested_questions(suggested_questions)
-            except Exception as e:
-                st.error(f"An error occurred while generating suggested questions: {e}")
 
 if __name__ == "__main__":
 
