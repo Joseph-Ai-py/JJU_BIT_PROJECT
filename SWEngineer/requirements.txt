@@ -12,3 +12,5 @@ pymupdf
 python-dotenv
 chromadb
 pymongo
+pydantic
+pyyaml

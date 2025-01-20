@@ -2,7 +2,7 @@ import os
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 
-def create_vector_database(texts):
+def create_vector_database(chunks):
     print("Creating vector database...")
 
     # 디렉토리 확인 및 생성
@@ -17,23 +17,21 @@ def create_vector_database(texts):
         print("Initialized OpenAI embeddings model.")
 
         # Chroma 데이터베이스 생성
-        db = Chroma.from_texts(
-            texts=texts,
+        db = Chroma.from_documents(
+            documents=chunks,
             embedding=embeddings_model,
             collection_name='esg',
             persist_directory=persist_directory,
             collection_metadata={'hnsw:space': 'cosine'},
         )
+
         print("Vector database created successfully.")
+
         return db
 
     except Exception as e:
         print(f"Error during vector database creation: {e}")
         return None
-
-    except Exception as e:
-        print(f"Error during vector database creation: {e}")
-        raise
 
 def query_database(db, query):
     print("Querying the vector database...")
