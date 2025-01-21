@@ -2,17 +2,23 @@ import os
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 
+import logging
+from datetime import datetime
+
+def setup_logging():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 def create_vector_database(chunks):
-    print("Creating vector database...")
+    logging.info(f"Creating vector database...")
 
     persist_directory = './SWEngineer/db/chromadb'
     if not os.path.exists(persist_directory):
         os.makedirs(persist_directory)
-        print(f"Created directory: {persist_directory}")
+        logging.info(f"Created directory: {persist_directory}")
 
     try:
         embeddings_model = OpenAIEmbeddings()
-        print("Initialized OpenAI embeddings model.")
+        logging.info(f"Initialized OpenAI embeddings model.")
 
         # Chroma 데이터베이스 생성
         db = Chroma.from_documents(
@@ -23,21 +29,21 @@ def create_vector_database(chunks):
             collection_metadata={'hnsw:space': 'cosine'},
         )
 
-        print("Vector database created successfully.")
+        logging.info(f"Vector database created successfully.")
 
         return db
 
     except Exception as e:
-        print(f"Error during vector database creation: {e}")
+        logging.error(f"Error during vector database creation: {e}")
         return None
 
 def query_database(db, query):
-    print("Querying the vector database...")
+    logging.info(f"Querying the vector database...")
     try:
         mmr_docs = db.max_marginal_relevance_search(query, k=20, fetch_k=100)
-        print(f"Query returned {len(mmr_docs)} documents. \n docs : {mmr_docs}")
+        logging.info(f"Query returned {len(mmr_docs)} documents. \n docs : {mmr_docs}")
         return [docs.page_content for docs in mmr_docs]
 
     except Exception as e:
-        print(f"Error during querying: {e}")
+        logging.error(f"Error during querying: {e}")
         raise
