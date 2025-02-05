@@ -72,7 +72,7 @@ def main_streamlit():
         password_input = st.sidebar.text_input("Password", type="password")
 
         if st.sidebar.button("Login"):
-            if check_credentials(username_input, password_input, "user_credentials.csv"):
+            if check_credentials(username_input, password_input, "SWEngineer/user_credentials.csv"):
                 st.session_state["logged_in"] = True
                 st.session_state["username"] = username_input
                 st.sidebar.success(f"로그인 성공: {username_input}")
